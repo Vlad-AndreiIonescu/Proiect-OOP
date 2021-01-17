@@ -1,0 +1,2404 @@
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#include<iostream>
+#include<ctype.h>
+#include<string>
+#include<map>
+#include <vector>
+#include <set>
+#include <fstream>
+#include <sstream>
+
+
+using namespace std;
+map<string, set<vector<string>>> tables;
+class mesajExceptie
+{
+    string mesajDeExceptie;
+public:
+    mesajExceptie(string mesajDeExceptie)
+    {
+        this->mesajDeExceptie = mesajDeExceptie;
+
+    }
+    string getMesajDeExceptie()
+    {
+        return this->mesajDeExceptie;
+    }
+};
+class Column {
+    string name;
+    string dataType;
+    string valoareImplicita;
+    int columnLenght;
+public:
+    Column() {
+
+        this->name = "Default";
+        this->dataType = "Default";
+        this->valoareImplicita = "Default";
+        this->columnLenght = 0;
+    }
+    Column(string name, string dataType, string valoareImplicita, int columnLenght) {
+        this->name = name;
+        this->dataType = dataType;
+        this->valoareImplicita = valoareImplicita;
+        this->columnLenght = columnLenght;
+
+    }
+    Column(const Column& c) {
+        this->name = c.name;
+        this->dataType = c.dataType;
+        this->valoareImplicita = c.valoareImplicita;
+        this->columnLenght = c.columnLenght;
+    }
+    Column& operator=(const Column& c) {
+
+        this->name = c.name;
+        this->dataType = c.dataType;
+        this->valoareImplicita = c.valoareImplicita;
+        this->columnLenght = c.columnLenght;
+        return *this;
+
+    }
+    ~Column() {
+
+
+    }
+    string getname() {
+        return this->name;
+    }
+    string getDataType() {
+        return this->dataType;
+    }
+    string getValoareImplicita() {
+        return this->valoareImplicita;
+    }
+    int getcolumnLenght() {
+        return this->columnLenght;
+    }
+
+    void setname(string name) {
+        this->name = name;
+    }
+    void setDataType(string dataTyoe) {
+        this->dataType = dataType;
+    }
+    void setValoareImplicta(string valoareImplicita) {
+        this->valoareImplicita = valoareImplicita;
+    }
+    void setcolumnLenght(int columnLenght) {
+        this->columnLenght = columnLenght;
+    }
+
+    friend ostream& operator<<(ostream&, Column);
+};
+ostream& operator<<(ostream& out, Column c) {
+    out << " A fost apelata column " << c.getname();
+    out << "cu tipul de data" << c.getDataType();
+    out << ", cu valoarea implicita" << c.getValoareImplicita();
+    out << " si cu dimensiunea " << c.getcolumnLenght();
+    return out;
+}
+
+class Table {
+public:string nume;
+      Column* columns;
+      vector<string> colTab;
+      vector<string> colValues;
+      set<vector<string>> TableLines;
+     
+      Table() {
+          nume = "Default";
+          columns = nullptr;
+      }
+      Table(string nume, Column* columns) {
+          this->nume = nume;
+          if (columns != nullptr) {
+              for (int i = 0; sizeof(columns); i++)
+                  this->columns[i] = columns[i];
+          }
+      }
+      Table(const Table& t) {
+          this->nume = t.nume;
+          if (this->columns != NULL) {
+              delete[] this->columns;
+
+          }
+          this->columns = new Column[sizeof(t.columns)];
+          for (int i = 0; i < sizeof(t.columns); i++) {
+
+              this->columns[i] = t.columns[i];
+          }
+      }
+      Table& operator=(const Table& t) {
+          this->nume = t.nume;
+          if (this->columns != NULL) {
+              delete[] this->columns;
+
+          }
+          this->columns = new Column[sizeof(t.columns)];
+          for (int i = 0; i < sizeof(t.columns); i++) {
+
+              this->columns[i] = t.columns[i];
+          }
+          return *this;
+      }
+      ~Table() {
+          if (this->columns != NULL) {
+              delete[] columns;
+          }
+
+      }
+      string getNume() {
+          return this->nume;
+      }
+      Column* getcolumns() {
+          return this->columns;
+      }
+      void setNume() {
+          this->nume = nume;
+      }
+
+};
+class VerificareDataType {
+public:
+    int count;
+    vector<string>dataType;
+    vector<string> valori;
+    set<vector<string>> tabel;
+
+    VerificareDataType()
+    {
+        for (std::vector<string>::iterator iterator = this->valori.begin(); iterator != this->valori.end(); ++iterator) *iterator = " ";
+        for (std::vector<string>::iterator iterator = this->dataType.begin(); iterator != this->dataType.end(); ++iterator) *iterator = " ";
+
+        for (std::set<vector<string>>::iterator iterator = this->tabel.begin(); iterator != this->tabel.end(); ++iterator) {
+            vector<string> temp = *iterator;
+            for (std::vector<string>::iterator it = temp.begin(); it != temp.end(); ++it) *it = " ";
+            this->tabel.insert(temp);
+        }
+    }
+
+    VerificareDataType(vector<string> types, vector<string> valori, set<vector<string>> tabel)
+    {
+        this->dataType = types;
+        this->valori = valori;
+        this->tabel = tabel;
+    }
+
+    void setDate(vector<string> valori)
+    {
+        if (valori.size() > 0)
+        {
+            this->valori = valori;
+        }
+    }
+
+    void setTipuri(vector<string> types)
+    {
+        if (types.size() != NULL) {
+            this->dataType = types;
+        }
+    }
+
+    set<vector<string>> verificare()
+    {
+        if (valori.size() == dataType.size())
+        {
+            count = 0;
+            while (count < valori.size())
+            {
+                if (dataType[count] == "Integer")
+                {
+                    if (!(vInteger(valori[count])))
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if (dataType[count] == "float")
+                    {
+                        if (!(vNumber(valori[count])))
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (dataType[count] == "text")
+                        {
+                            if (vInteger(valori[count]) || vNumber(valori[count]))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                ++count;
+            }
+            if (count > valori.size())
+                this->tabel.insert(valori);
+
+        }
+
+        return tabel;
+    }
+
+    bool vInteger(const std::string& s)
+    {
+        if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+        char* p;
+        strtol(s.c_str(), &p, 10);
+        return (*p == 0);
+    }
+
+    bool vNumber(string myString) {
+        std::istringstream iss(myString);
+        float f;
+        iss >> noskipws >> f;
+        return iss.eof() && !iss.fail();
+    }
+
+    bool vCreate()
+    {
+        if (valori.size() == dataType.size())
+        {
+            int countCreare = 0;
+            while (countCreare < valori.size())
+            {
+                if (dataType[countCreare] == "Integer")
+                {
+                    if (!(vInteger(valori[countCreare])))
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if (dataType[countCreare] == "float")
+                    {
+                        if (!(vNumber(valori[countCreare])))
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (dataType[countCreare] == "text")
+                        {
+                            if (vInteger(valori[countCreare]) || vNumber(valori[countCreare]))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                ++countCreare;
+            }
+            if (countCreare > valori.size())
+            {
+
+                return 1;
+            }
+        }
+
+    }
+};
+
+
+class Creare :Table {
+public: bool isCorrect;
+      string tableName;
+      string* columnName;
+      string* tip;
+      string* dimensiune;
+      string* valoareImplicita;
+      int nrIntroduceri;
+      int nrTabeleCreate;
+      VerificareDataType vCreate;
+
+
+
+      Creare()
+      {
+          this->isCorrect = false;
+          this->tableName = "";
+          this->columnName = NULL;
+          this->tip = NULL;
+          this->dimensiune = NULL;
+          this->valoareImplicita = NULL;
+          this->nrIntroduceri = 0;
+          nrTabeleCreate++;
+      }
+      Creare(bool isCorrect, string tableName, string* columnName, string* tip, string* dimensiune, string* valoareImplicita, int nrIntroduceri) {
+
+          this->isCorrect = isCorrect;
+          this->tableName = tableName;
+          this->nrIntroduceri = nrIntroduceri;
+          this->columnName = new string[this->nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->columnName[i] = columnName[i];
+          }
+          this->tip = new string[this->nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->tip[i] = tip[i];
+          }
+          this->dimensiune = new string[this->nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->dimensiune[i] = dimensiune[i];
+          }
+          this->valoareImplicita = new string[this->nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->valoareImplicita = valoareImplicita;
+          }
+          nrTabeleCreate++;
+      }
+      ~Creare() {
+
+          if (columnName != NULL)
+              delete[] columnName;
+
+          if (tip != NULL)
+              delete[] tip;
+
+          if (dimensiune != NULL)
+              delete[] dimensiune;
+          if (valoareImplicita != NULL)
+              delete[] valoareImplicita;
+
+      }
+      Creare(const Creare& c) {
+          this->isCorrect = c.isCorrect;
+          this->tableName = c.tableName;
+          this->nrIntroduceri = c.nrIntroduceri;
+          if (this->columnName != NULL)
+              delete[] columnName;
+          this->columnName = new string[c.nrIntroduceri];
+          for (int i = 0; i < this->nrIntroduceri; i++) {
+              this->columnName[i] = c.columnName[i];
+          }
+          if (this->tip != NULL) {
+              delete[] this->tip;
+          }
+          this->tip = new string[nrIntroduceri];
+          for (int i = 0; i < this->nrIntroduceri; i++) {
+              this->tip[i] = c.tip[i];
+          }
+          if (this->dimensiune != NULL) {
+              delete[] this->dimensiune;
+          }
+          this->dimensiune = new string[nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->dimensiune[i] = c.dimensiune[i];
+          }
+          if (this->valoareImplicita != NULL) {
+              delete[] this->valoareImplicita;
+          }
+          this->valoareImplicita = new string[nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->valoareImplicita[i] = c.valoareImplicita[i];
+          }
+
+          nrTabeleCreate++;
+      }
+      Creare& operator=(const Creare& c) {
+          this->isCorrect = c.isCorrect;
+          this->tableName = c.tableName;
+          this->nrIntroduceri = c.nrIntroduceri;
+          if (this->columnName != NULL)
+              delete[] columnName;
+          this->columnName = new string[c.nrIntroduceri];
+          for (int i = 0; i < this->nrIntroduceri; i++) {
+              this->columnName[i] = c.columnName[i];
+          }
+          if (this->tip != NULL) {
+              delete[] this->tip;
+          }
+          this->tip = new string[nrIntroduceri];
+          for (int i = 0; i < this->nrIntroduceri; i++) {
+              this->tip[i] = c.tip[i];
+          }
+          if (this->dimensiune != NULL) {
+              delete[] this->dimensiune;
+          }
+          this->dimensiune = new string[nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->dimensiune[i] = c.dimensiune[i];
+          }
+          if (this->valoareImplicita != NULL) {
+              delete[] this->valoareImplicita;
+          }
+          this->valoareImplicita = new string[nrIntroduceri];
+          for (int i = 0; i < nrIntroduceri; i++) {
+              this->valoareImplicita[i] = c.valoareImplicita[i];
+          }
+
+          nrTabeleCreate++;
+          return *this;
+      }
+      void setIsCorrect(bool isCorrect) {
+          this->isCorrect = isCorrect;
+      }
+
+      void settableName(string tableName) {
+          this->tableName = tableName;
+      }
+      void setcolumnName(string* columnName, int nrIntroduceri) {
+          if (columnName != NULL && nrIntroduceri > 0) {
+              this->nrIntroduceri = nrIntroduceri;
+              if (this->columnName != NULL) {
+                  delete[] this->columnName;
+              }
+              this->columnName = new string[nrIntroduceri];
+              for (int i = 0; i < nrIntroduceri; i++) {
+                  this->columnName[i] = columnName[i];
+              }
+
+          }
+      }
+      void setTip(string* tip, int nrIntroduceri) {
+          if (tip != NULL && nrIntroduceri > 0) {
+              this->nrIntroduceri = nrIntroduceri;
+              if (this->tip != NULL) {
+                  delete[] this->tip;
+              }
+              this->tip = new string[nrIntroduceri];
+              for (int i = 0; i < nrIntroduceri; i++) {
+                  this->tip[i] = tip[i];
+              }
+          }
+
+      }
+      void setdimensiune(string* dimensiune, int nrIntroduceri) {
+          if (dimensiune != NULL && nrIntroduceri > 0) {
+              this->nrIntroduceri = nrIntroduceri;
+              if (this->dimensiune != NULL) {
+                  delete[] this->dimensiune;
+              }
+              this->dimensiune = new string[nrIntroduceri];
+              for (int i = 0; i < nrIntroduceri; i++) {
+                  this->dimensiune[i] = dimensiune[i];
+              }
+          }
+      }
+      void setvaloareImplicita(string* valoareImplicita, int nrIntroduceri) {
+          if (valoareImplicita != NULL && nrIntroduceri > 0) {
+              this->nrIntroduceri = nrIntroduceri;
+              if (this->valoareImplicita != NULL) {
+                  delete[] this->valoareImplicita;
+              }
+              this->valoareImplicita = new string[nrIntroduceri];
+              for (int i = 0; i < nrIntroduceri; i++) {
+                  this->valoareImplicita[i] = valoareImplicita[i];
+              }
+          }
+      }
+      bool getIsCorrect() {
+          return this->isCorrect;
+      }
+      int getNrIntroduceri() {
+          return this->nrIntroduceri;
+      }
+      string gettableName() {
+          return this->tableName;
+      }
+      string* getcolumnName() {
+          if (this->columnName != NULL) {
+              return this->columnName;
+          }
+          return NULL;
+      }
+      string getcolumnName(int index) {
+          if (this->columnName != NULL && index < this->nrIntroduceri && index >= 0) {
+              return columnName[index];
+          }
+          return NULL;
+      }
+      string* getTip() {
+          if (this->tip != NULL) {
+              return this->tip;
+          }
+          return NULL;
+      }
+      string getTip(int index) {
+          if (this->tip != NULL && index < this->nrIntroduceri && index >= 0) {
+              return tip[index];
+          }
+      }  string* getDimensiune() {
+          if (this->dimensiune != NULL) {
+              return this->dimensiune;
+          }
+          return NULL;
+      }
+      string getDimensiune(int index) {
+          if (this->dimensiune != NULL && index < this->nrIntroduceri && index >= 0) {
+              return dimensiune[index];
+          }
+          return NULL;
+      }
+      string* getValoareImplicita() {
+          if (this->valoareImplicita != NULL) {
+              return this->valoareImplicita;
+          }
+          return NULL;
+      }
+      string getValoareImplicita(int index) {
+          if (this->valoareImplicita != NULL && index < this->nrIntroduceri && index >= 0) {
+              return valoareImplicita[index];
+          }
+          return NULL;
+      }
+
+      void verifyCreateTable(string comanda) {
+          char* words;
+          isCorrect = false;
+          words = new char[comanda.length() + 1];
+          strcpy(words, comanda.c_str());
+          char* parenthesis;
+          string vCT = comanda.substr(0, 12);
+          if (vCT == "CREATE TABLE")
+          {
+              int pozitie1 = 13;
+              int pozitie2 = 0;
+              pozitie2 = comanda.find('(', sizeof('('));
+
+              string nume_tabel = comanda.substr(pozitie1, pozitie2 - pozitie1);
+              int flag = 1;
+
+              for (std::map<string, set<vector<string>>>::iterator iterator = tables.begin(); iterator != tables.end(); ++iterator)
+                  if (nume_tabel == iterator->first)
+                      flag = 0;
+              if (flag == 1) {
+                  int start = pozitie2 + 1;
+                  int finish = 0;
+                  while (start < comanda.size() - 2) {
+                      for (std::string::size_type index = start; index < comanda.size(); ++index) {
+                          if (comanda[index] == ')') {
+                              finish = index;
+                              break;
+                          }
+                      }
+                      string column = comanda.substr(start + 1, finish - 1 - start);
+                      int nr = 0;
+                      for (std::string::size_type i = column.size(); i >= 1; --i) {
+                          if (column[i] == ',') {
+                              nr++;
+                          }
+                      }
+                      if (nr != 3) {
+                          break;
+                      }
+                      else {
+                          int pozitie_defaultValue = 0;
+                          for (std::string::size_type i = column.size(); i >= 1; --i) {
+                              if (column[i] == ' ') {
+                                  pozitie_defaultValue = i;
+                                  break;
+                              }
+                          }
+
+                          if (column[pozitie_defaultValue - 1] == ',') {
+                              colTab.push_back(column);
+                              start = finish + 3;
+                          }
+                      }
+                  }
+                  if (start < comanda.size() - 2) {
+                      throw mesajExceptie("Comanda introdusa nu este buna");
+                  }
+                  else {
+                      vector<string> type;
+                      vector<string> values;
+                      for (std::vector<string>::iterator x = colTab.begin(); x != colTab.end(); ++x)
+                      {
+                          int pozitieTip1 = x->find(',', 0);
+                          int pozitieTip2 = x->find(',', pozitieTip1 + 1);
+                          string datatype = x->substr(pozitieTip1 + 2, pozitieTip2 - pozitieTip1 - 2);
+                          if (datatype == "integer" || datatype == "float" || datatype == "text")
+                          {
+                              type.push_back(datatype);
+                          }
+                          else break;
+
+
+                          string valoare = *x;
+                          int pozitie_defaultValue = 0;
+                          for (std::string::size_type i = valoare.size(); i >= 1; --i) {
+                              if (valoare[i] == ',')
+                              {
+                                  pozitie_defaultValue = i;
+                                  break;
+                              }
+                          }
+                          string defaultValue = x->substr(pozitie_defaultValue + 2, x->size());
+                          values.push_back(defaultValue);
+
+
+                      }
+                      vCreate.setTipuri(type);
+                      vCreate.setDate(values);
+                      if (vCreate.vCreate()) {
+                          TableLines.insert(colTab);
+                          colTab.clear();
+                          tables.insert(std::pair< string, set<vector<string>>>(nume_tabel, TableLines));
+                          colValues.clear();
+                          TableLines.clear();
+                          cout << "Tabel creat!" << endl;
+                      }
+                      else {
+                          colTab.clear();
+                          TableLines.clear();
+                          colValues.clear();
+                          cout << "Tabelul nu a putut fi creat!" << endl;
+                      }
+                  }
+
+              }
+              else {
+                  cout << "Un astfel de tabel este deja existent!" << endl;
+              }
+          }
+          else
+          {
+              cout << "Comanda introdusa nu este corecta!" << endl;
+          }
+      }
+      friend ostream& operator<<(ostream&, Creare);
+};
+ostream& operator<<(ostream& out, Creare c) {
+    out << "Comanda introdusa este :" << c.getIsCorrect() << endl;
+    out << "Se va implementa tabela " << c.gettableName() << " cu coloanele:";
+    for (int i = 0; i < c.getNrIntroduceri(); i++) {
+        out << c.getcolumnName()[i] << " de tip " << c.getTip()[i] << ", de dimensiune" << c.getDimensiune()[i]
+            << " si valoare implicita " << c.getValoareImplicita()[i];
+        out << endl;
+    }
+    out << "Numarul de introduceri este de :" << c.getNrIntroduceri();
+    out << endl;
+    return out;
+
+}
+
+class Delete {
+    string columnName;
+    string tableName;
+    bool isCorrect;
+    char* value;
+
+public:
+    Delete() {
+        columnName = "Necunoscut";
+        tableName = "Necunoscut";
+        isCorrect = false;
+        value = nullptr;
+    }
+    Delete(bool isCorrect, string tableName, string columnName, char* value) {
+        this->columnName = columnName;
+        this->tableName = tableName;
+        this->isCorrect = isCorrect;
+        for (int i = 0; i < strlen(value); i++)
+            this->value[i] = value[i];
+    }
+    Delete(const Delete& d) {
+        this->columnName = d.columnName;
+        this->tableName = d.tableName;
+        this->isCorrect = d.isCorrect;
+        if (this->value != NULL) {
+            delete[] this->value;
+        }
+        this->value = new char[strlen(d.value)];
+        for (int i = 0; i < strlen(d.value); i++)
+            this->value[i] = d.value[i];
+    }
+    Delete& operator=(const Delete& d) {
+        this->columnName = d.columnName;
+        this->tableName = d.tableName;
+        this->isCorrect = d.isCorrect;
+        for (int i = 0; i < strlen(d.value); i++)
+            this->value[i] = d.value[i];
+        return *this;
+    }
+    void setIsCorrect(bool isCorrect) {
+        this->isCorrect = isCorrect;
+    }
+    void settableName(string tableName) {
+        this->tableName = tableName;
+
+    }
+    void setcolumnName(string columnName) {
+        this->columnName = columnName;
+
+    }
+    bool getisCorrect() {
+        return this->isCorrect;
+    }
+
+    string gettableName() {
+        return this->tableName;
+
+    }
+    string getcolumnName() {
+        return this->columnName;
+
+    }
+    char* getvalue() {
+        return this->value;
+    }
+    void verifyDelete(char* comanda) {
+
+        isCorrect = false;
+        char* words;
+        words = new char[strlen(comanda)];
+        strcpy(words, comanda);
+
+        string vDel(words, words + 11);
+
+        if (isspace(words[12])) {
+
+            int i = 13;
+            while (!isspace(words[i])) {
+                i++;
+            }
+            string tableName(words + 12, words + i);
+            this->tableName = tableName;
+            if (vDel == "DELETE FROM" && i != 12) {//de aici incoace intra in delete
+                int j;
+                j = i + 1;
+
+                while (!isspace(words[j]))
+                    j++;
+
+                if (words[strlen(words - 1)] == ';') {
+                    string where(words[i + 1], words[j]);
+                    if (where == "WHERE") {
+                        int k;
+                        k = j + 1;
+                        while (words[k] != '=' && words != NULL)
+                            k++;
+                        string columnName(words + j, words + k);
+                        this->columnName = columnName;
+
+                        if (words[k] == '=') {
+                            int n = k + 2;
+                            while (words[n] != ';' && words[n] != NULL)
+                                n++;
+                            string value(words[k + 2], words[n]);
+                            strcpy(this->value, value.c_str());
+
+                            int flag = 1;
+                            for (int i = 0; i < value.length() && flag == 0; i++) {
+                                if (!(isdigit(value[i]) || isalpha(value[i])) || value[i] != '_')
+                                    flag = 0;
+                            }
+                            if (flag == 1)
+                                isCorrect = 1;
+                        }
+                    }
+                }
+
+            }
+        }
+        if (isCorrect == false)  throw mesajExceptie("EROARE!Comanda nu poate executata.");
+        else throw mesajExceptie("Comanda a fost executata");
+    }
+    friend ostream& operator<<(ostream&, Delete);
+};
+ostream& operator<<(ostream& out, Delete d) {
+    out << "Comanda introdusa este:" << d.getisCorrect() << endl;
+    out << "Modificarile sunt facute pentru column " << d.getcolumnName() << " din tabela " << d.gettableName() << endl;
+    out << "Valorile introduse sunt : " << d.getvalue() << endl;
+    return out;
+}
+
+class Display 
+{
+public:
+    bool isCorrect;
+    char* tableName;
+    int countDisplay=1;
+
+    Display() {
+        this->isCorrect = false;
+        this->tableName = NULL;
+    }
+
+    Display(bool isCorrect, const char* tableName) {
+        this->isCorrect = isCorrect;
+        this->tableName = new char[strlen(tableName) + 1];
+        strcpy(this->tableName, tableName);
+    }
+    Display(const Display& d) {
+        this->isCorrect = d.isCorrect;
+        if (tableName != NULL)
+            delete[]  tableName;
+        this->tableName = new char[strlen(d.tableName) + 1];
+        strcpy(this->tableName, d.tableName);
+    }
+
+    ~Display() {
+        if (this->tableName) {
+            delete[] tableName;
+        }
+        tableName = NULL;
+    }
+    Display& operator=(const Display& d) {
+        this->isCorrect - d.isCorrect;
+        if (this->tableName) {
+            delete[]this->tableName;
+        }
+        this->tableName = new char[strlen(d.tableName) + 1];
+        strcpy(this->tableName, d.tableName);
+        return *this;
+    }
+    //getteri si setteri
+    void setIsCorrect(bool isCorrect) {
+        this->isCorrect = isCorrect;
+    }
+
+    void setTableName(char* tableName) {
+        if (tableName) {
+            if (this->tableName) {
+                delete[]this->tableName;
+            }
+            this->tableName = new char[strlen(tableName) + 1];
+            strcpy(this->tableName, tableName);
+        }
+    }
+
+    bool getIsCorrect() {
+        return this->isCorrect;
+    }
+    char* getTableName() {
+        return this->tableName;
+    }
+
+
+    void setDisplay(set<vector<string>> sv)
+    {
+        vector<string> v = *sv.rbegin();
+        string column_name;
+        string defaultValue;
+       
+
+        ofstream fisier("DISPLAY TABLE" + std::to_string(countDisplay) + ".txt");
+        for (std::vector<string>::iterator iterator = v.begin(); iterator != v.end(); ++iterator)
+        {
+            int pozitie_coloana = iterator->find(',', 0);
+            string column_name = iterator->substr(0, pozitie_coloana);
+            cout << column_name << " *************** ";
+            column_name.append(column_name + " *************** ");
+        }
+        fisier << column_name << endl;
+        cout << endl;
+
+        for (std::vector<string>::iterator iterator = v.begin(); iterator != v.end(); ++iterator)
+        {
+            string valoare = *iterator;
+            int pozitie_defaultValue = 0;
+            for (std::string::size_type i = valoare.size(); i >= 1; --i)
+            {
+                if (valoare[i] == ',')
+                {
+                    pozitie_defaultValue = i;
+                    break;
+                }
+            }
+
+            string defaultValue = iterator->substr(pozitie_defaultValue + 1, iterator->size());
+            cout << defaultValue << " *************** ";
+            defaultValue.append(defaultValue + " *************** ");
+        }
+        fisier << defaultValue << endl;
+        cout << endl;
+
+        for (std::set<vector<string>>::iterator iterator = sv.begin(); iterator != std::prev(sv.end()); ++iterator)
+        {
+            string columnValue = " ";
+            vector<string> aux = *iterator;
+            for (std::vector<string>::iterator jt = aux.begin(); jt != aux.end(); ++jt)
+            {
+                cout << *jt << " *************** ";
+                columnValue.append(*jt + " *************** ");
+            }
+            fisier << columnValue << endl;
+            cout << endl;
+        }
+        fisier.close();
+        countDisplay;
+    }
+
+    void DisplayTable(string comanda)
+    {
+        string verificare = comanda.substr(0, 13);
+        if (verificare == "DISPLAY TABLE")
+        {
+            int tabel_position = 14;
+
+            string nume_tabel = comanda.substr(tabel_position, comanda.size() - tabel_position);
+            int flag = 0;
+
+            for (map<string, set<vector<string>>>::iterator iterator = tables.begin(); iterator != tables.end(); ++iterator)
+            {
+                if (iterator->first == nume_tabel)
+                {
+                    cout << "\t\t " << iterator->first << endl;
+                    setDisplay(iterator->second);
+                    flag = 1;
+                    break;
+                }
+            }
+
+            if (flag == 0)
+            {
+                cout << "Tabelul nu exista!" << endl;
+            }
+
+        }
+        else
+        {
+            throw("Comanda pe care ati introdus-o este incorecta!");
+        }
+    }
+    friend ostream& operator<< (ostream&, Display);
+};
+
+ostream& operator<< (ostream& out, Display d) {
+    out << "Comanda introdusa este :" << d.getIsCorrect() << endl;
+    out << "Numele tabelei este: ";
+    for (int i = 0; i < strlen(d.tableName); i++) {
+        out << d.getTableName()[i];
+    }
+    out << endl;
+    return out;
+}
+class Drop {
+
+    char* tableName;
+    bool isCorrect;
+
+
+public:
+    Drop() {
+        this->tableName = NULL;
+        this->isCorrect = false;
+    }
+
+    Drop(bool isCorrect, const char* tableName) {
+        this->tableName = new char[strlen(tableName) + 1];
+        strcpy(this->tableName, tableName);
+        this->isCorrect = isCorrect;
+    }
+    Drop(const Drop& d) {
+        if (tableName != NULL)
+            delete[] tableName;
+
+        this->tableName = new char[strlen(d.tableName) + 1];
+        strcpy(this->tableName, d.tableName);
+        this->isCorrect = d.isCorrect;
+    }
+
+
+
+    ~Drop() {
+        tableName = NULL;
+        if (this->tableName) {
+            delete[]tableName;
+        }
+
+    }
+    Drop& operator=(const Drop& d) {
+        this->isCorrect - d.isCorrect;
+        if (this->tableName) {
+            delete[]this->tableName;
+        }
+        this->tableName = new char[strlen(d.tableName) + 1];
+        strcpy(this->tableName, d.tableName);
+        return *this;
+    }
+    void setIsCorrect(bool isCorrect) {
+        this->isCorrect = isCorrect;
+    }
+
+    void settableName(char* tableName) {
+        if (tableName) {
+            if (this->tableName) {
+                delete[]this->tableName;
+            }
+            this->tableName = new char[strlen(tableName) + 1];
+            strcpy(this->tableName, tableName);
+        }
+    }
+    bool getIsCorrect() {
+        return this->isCorrect;
+    }
+
+    char* gettableName() {
+        return this->tableName;
+    }
+    void verifyDrop(char* c) {
+        this->isCorrect = false;
+        int nr = 0;
+        int copy = 0;
+        char* verify;
+        verify = new char[strlen(c) + 1];
+        strcpy(verify, c);
+        for (int i = 0; i < strlen(c); i++)
+        {
+            if (isspace(c[i]))
+            {
+                nr++;
+                copy = i;
+            }
+        }
+        //retine DROP TABLE
+        string s(verify, verify + 10);
+        strcpy(verify, verify + 11);
+        strrev(verify);
+        strcpy(verify, verify + 1);
+        strrev(verify);
+        //verify retine totul dupa drop table
+
+        if (this->tableName) {
+            delete[]this->tableName;
+        }
+        this->tableName = new char[strlen(verify) + 1];
+        strcpy(this->tableName, verify);
+        //se retine numele tabelei
+        if (s == "DROP TABLE") {
+            if (isalpha(c[copy + 2]) && c[strlen(c) - 1] == ';') {
+                this->isCorrect = true;
+            }
+        }
+        //verifica daca comanda e scrisa corect
+        if (isCorrect == false) {
+            throw mesajExceptie("Comanda introdusa nu e buna");
+        }
+        else {
+            cout << "Comanda a fost executata" << endl;
+        }
+    }
+    friend ostream& operator<< (ostream&, Drop);
+};
+ostream& operator<<(ostream& out, Drop d) {
+    out << "Comanda introdusa este :" << d.getIsCorrect() << endl;
+    out << "Modificarile sunt facute pentru tabela :";
+    for (int i = 0; i < strlen(d.tableName); i++) {
+        out << d.gettableName()[i];
+    }
+    out << endl;
+    return out;
+}
+class Select {
+    bool isCorrect;
+    string columnName;
+    string  tableName;
+    string* stringColumnsName;
+    int nrColumns;
+    string valoareImplicita;
+
+public:
+    Select() {
+        isCorrect = false;
+        columnName = "Necunoscut";
+        tableName = "Necunoscut";
+        stringColumnsName = nullptr;
+        nrColumns = 0;
+        valoareImplicita = "Necunoscut";
+    }
+    Select(bool isCorrect, string stringColumnsName, int nrColumns, string columnName, string  tableName, string valoareImplicita) {
+        this->isCorrect = isCorrect;
+        this->columnName = columnName;
+        this->tableName = tableName;
+        for (int i = 0; i < nrColumns; i++)
+            this->stringColumnsName[i] = stringColumnsName[i];
+        this->nrColumns = nrColumns;
+        this->valoareImplicita = valoareImplicita;
+    }
+    Select(const Select& s) {
+
+        this->isCorrect = s.isCorrect;
+        this->columnName = s.columnName;
+        this->tableName = s.tableName;
+        if (stringColumnsName != NULL)
+            delete[] stringColumnsName;
+        for (int i = 0; i < nrColumns; i++)
+            this->stringColumnsName[i] = s.stringColumnsName[i];
+        this->nrColumns = s.nrColumns;
+        this->valoareImplicita = s.valoareImplicita;
+    }
+
+    Select& operator= (const Select& s) {
+        this->isCorrect = s.isCorrect;
+        this->columnName = s.columnName;
+        this->tableName = s.tableName;
+        if (this->stringColumnsName != NULL) {
+            delete[] this->stringColumnsName;
+        }
+        for (int i = 0; i < nrColumns; i++)
+            this->stringColumnsName[i] = s.stringColumnsName[i];
+        this->nrColumns = s.nrColumns;
+        this->valoareImplicita = s.valoareImplicita;
+        return *this;
+
+    }
+    bool getIsCorrect() {
+        return this->isCorrect;
+    }
+    string* getstringColumnsName() {
+        return this->stringColumnsName;
+
+    }
+    int getnrColumns() {
+        return this->nrColumns;
+    }
+    string getColumnName() {
+        return this->columnName;
+    }
+    string getTableName() {
+        return this->tableName;
+    }
+    string getValoareImplicita() {
+        return this->valoareImplicita;
+    }
+    void setisCorrect(bool isCorrect) {
+        this->isCorrect = isCorrect;
+    }
+    void setstringColumnsName(string* stringColumnsName, int nrColumns) {
+        this->nrColumns = nrColumns;
+        if (this->stringColumnsName != NULL)
+            delete[] this->stringColumnsName;
+        if (stringColumnsName != NULL)
+            this->stringColumnsName = new string[nrColumns];
+        for (int i = 0; i < nrColumns; i++)
+            this->stringColumnsName[i] = stringColumnsName[i];
+
+    }
+    void setnrColumns(int nrColumns) {
+
+        this->nrColumns = nrColumns;
+    }
+    void setColumnName(string columnName) {
+
+        this->columnName = columnName;
+    }
+    void setTableName(string  tableName) {
+        this->tableName = tableName;
+
+    }
+    void setValoareImplicita(string valoare) {
+        this->valoareImplicita = valoare;
+    }
+    void verifySelect(char* c)
+    {
+        int pozitieFrom = 0;
+        char* words;
+        int nr = 1;
+        words = new char[strlen(c) + 1];
+        strcpy(words, c);
+
+        string vSelect(words, words + 6);
+
+        char* stringParanthesis;
+        stringParanthesis = new char[strlen(words) + 1];
+        strcpy(stringParanthesis, words + 7);
+
+        if (vSelect == "SELECT" && words[strlen(words) - 1] == ';')
+        {
+            if ((words[strlen("SELECT")] == '(') || (words[strlen("SELECT") + 1] == '('))
+            {
+                if (isspace(words[6]))
+                {
+                    int i = 7;
+                    int k = i;
+                    while (words[k] != ')')
+                        k++;
+
+                    string paranteze(words + 7, words + k + 1);
+                    const char* paranteze1 = paranteze.c_str();
+                    strcpy(stringParanthesis, paranteze1);
+
+                    this->stringColumnsName = new string[100];
+
+                    int l = 0;
+                    if (stringParanthesis[0] == '(' && stringParanthesis[strlen(stringParanthesis) - 1] == ')')
+                    {
+                        strcpy(stringParanthesis, stringParanthesis + 1);
+                        strrev(stringParanthesis);
+                        strcpy(stringParanthesis, stringParanthesis + 1);
+                        strrev(stringParanthesis);
+
+
+                        int nrComma = 0;
+                        for (int i = 0; i < strlen(stringParanthesis) + 1; i++)
+                        {
+                            if (stringParanthesis[i] == ',')
+                            {
+                                nrComma++;
+                            }
+                        }
+                        pozitieFrom = k + 2;
+                        int k = 0;
+                        int n = strlen(stringParanthesis);
+                        strcat(stringParanthesis, ",");
+
+                        if (stringParanthesis[0] != ',') {
+                            int ci = 0;
+                            int nrwords = 0;
+                            int i = 0;
+                            while (i < strlen(stringParanthesis)) {
+                                if (stringParanthesis[i] == ',') {
+                                    nrwords++;
+                                    string n(stringParanthesis + ci, stringParanthesis + i);
+                                    this->stringColumnsName[nrwords] = n;
+                                    i = i + 2;
+                                    ci = i;
+                                }
+                                else i++;
+
+                            }
+                            if (nrwords == nrComma + 1)
+                            {
+                                nr = 0;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        else {
+            string s(words, words + 10);
+            //verificare daca nu exista parantezele si este de forma "SELECT ALL"
+            if (s == "SELECT ALL") {
+                pozitieFrom = 11;
+                cout << words[11] << endl;
+                nr = 0;
+            }
+        }
+        string from(words + pozitieFrom, words + pozitieFrom + 4);
+        //retine cuvantul "FROM"
+
+        if (from == "FROM" && nr == 0) {
+            this->isCorrect = false;
+            strcpy(words, words + pozitieFrom + 5);
+            //words retine tot ce e dupa ALL FROM
+
+            int n = 0;
+            while (words[n] != ' ' && words[n] != NULL && words[n] != ';')
+                n++;
+            if (n != 0) {
+                string  tableName(words, words + n);
+                this->tableName = tableName;
+                //retine nume tabela
+            }
+            if (words[n] == ';' || words[n + 1] == ';') {
+                isCorrect = true;
+            }//poate fi adev prop si daca nu mai exista partea cu WHERE, insa la sf trb sa aiba";"
+            else if (words[n + 1] == 'W') {
+                string where(words + n + 1, words + n + 6);
+                //retine cuv "WHERE"
+                if (where == "WHERE")
+                {
+                    n = n + 7;
+                    int i = n + 1;
+                    while (words[i] != ' ')
+                        i++;
+                    if (n = 1 < i)
+                    {
+                        string columnName(words + n, words + i);
+                        this->columnName = columnName;
+                        //retine nume_coloana
+                    }
+                    else nr++;
+                    if (words[i + 1] == '=')
+                        i = i + 1;
+                    else nr++;
+                    //verifica daca exista =in clauza WHERE
+                    int ultimul = i + 2;
+
+                    if (strlen(words) - 2 != ultimul) {
+                        string valoare(words + ultimul, ultimul + strlen(words) - 1);
+                        this->valoareImplicita = valoare;
+                    }
+                    else nr++;
+                    //retine valoare
+                    if (nr == 0)//verifica daca exista vreo eroare la introducere
+                        this->isCorrect = true;
+                }
+            }
+        }
+        if (this->isCorrect == true) {
+            cout << "Comanda introdusa a fost executata" << endl;
+        }
+        else throw mesajExceptie("Comanda introdusa nu este buna");
+    }
+};
+class Update
+{
+
+    bool isCorrect;
+    char* tableName;
+    string* columnName;
+    string* valoareIntrodusa;
+
+public:
+    Update()
+    {
+        columnName = NULL;
+        tableName = NULL;
+        valoareIntrodusa = NULL;
+        this->isCorrect = false;
+    }
+    Update(bool isCorrect, int nrColoane, string* columnName, const char* tableName, string* valoareIntrodusa)
+    {
+        this->columnName = new string[2];
+        for (int i = 0; i < 2; i++) {
+            this->columnName[i] = columnName[i];
+        }
+        this->tableName = new char[strlen(tableName) + 1];
+        strcpy(this->tableName, tableName);
+        this->valoareIntrodusa = new string[2];
+        for (int i = 0; i < 2; i++) {
+            this->valoareIntrodusa[i] = valoareIntrodusa[i];
+        }
+        this->isCorrect = isCorrect;
+    }
+    Update(const Update& u)
+    {
+        this->columnName = new string[2];
+        for (int i = 0; i < 2; i++) {
+            this->columnName[i] = u.columnName[i];
+        }
+        this->tableName = new char[strlen(u.tableName) + 1];
+        strcpy(this->tableName, u.tableName);
+        this->valoareIntrodusa = u.valoareIntrodusa;
+        for (int i = 0; i < 2; i++) {
+            this->valoareIntrodusa[i] = u.valoareIntrodusa[i];
+        }
+        this->isCorrect = u.isCorrect;
+    }
+    ~Update()
+    {
+        if (this->tableName) {
+            delete[]this->tableName;
+        }
+        this->tableName = NULL;
+
+        if (this->columnName) {
+            delete[]this->columnName;
+        }
+        this->columnName = NULL;
+
+        if (this->valoareIntrodusa) {
+            delete[]this->valoareIntrodusa;
+        }
+        this->valoareIntrodusa = NULL;
+    }
+
+    Update& operator= (const Update& u)
+    {
+
+        if (this->tableName)
+        {
+            delete[] this->tableName;
+        }
+        this->tableName = new char[strlen(u.tableName) + 1];
+        strcpy(this->tableName, u.tableName);
+        if (this->columnName) {
+            delete[]this->columnName;
+        }
+
+        this->columnName = new string[2];
+        for (int i = 0; i < 2; i++) {
+            this->columnName[i] = u.columnName[i];
+
+            if (this->valoareIntrodusa) {
+                delete[]this->valoareIntrodusa;
+            }
+            this->valoareIntrodusa = new string[2];
+            for (int i = 0; i < 2; i++) {
+                this->valoareIntrodusa[i] = u.valoareIntrodusa[i];
+            }
+
+            this->isCorrect = u.isCorrect;
+        }
+        return *this;
+
+
+    }
+    void setIsCorrect(bool isCorrect) {
+        this->isCorrect = isCorrect;
+    }
+
+    void settableName(char* tableName) {
+        if (tableName) {
+            if (this->tableName)
+            {
+                delete[]this->tableName;
+            }
+            this->tableName - new char[strlen(tableName) + 1];
+            strcpy(this->tableName, tableName);
+
+        }
+    }
+
+    void setValoareIntrodusa(string* valoareIntrodusa) {
+        if (valoareIntrodusa) {
+            if (this->valoareIntrodusa) {
+                delete[]this->valoareIntrodusa;
+            }
+            this->valoareIntrodusa = new string[2];
+            for (int i = 0; i < 2; i++) {
+                this->valoareIntrodusa[i] = valoareIntrodusa[i];
+            }
+        }
+    }
+    void setcolumnName(string* columnName) {
+        if (columnName) {
+            if (this->columnName) {
+                delete[]this->columnName;
+            }
+            this->columnName = new string[2];
+            for (int i = 0; i < 2; i++) {
+                this->columnName[i] = columnName[i];
+            }
+        }
+    }
+    bool getIsCorrect() {
+        return this->isCorrect;
+    }
+
+    char* gettableName() {
+        return this->tableName;
+    }
+    string* getValoareIntrodusa()
+    {
+        return this->valoareIntrodusa;
+    }
+    string getValoareIntrodusa(int index) {
+        if (index == 0 || index == 1) {
+            return this->valoareIntrodusa[index];
+
+        }
+    }
+
+
+    string* getcolumnName() {
+        return this->columnName;
+    }
+    string getcolumnName(int index) {
+        if (index == 0 || index == 1) {
+            return this->columnName[index];
+        }
+    }
+
+    void verifyUpdate(char* c) {
+        isCorrect = false;
+        char* words;
+        words = new char[strlen(c)];
+        strcpy(words, c);
+        string s(words, words + 6);
+        //retine UPDATE
+        if (isspace(words[6]))
+        {
+            int i = 7;
+            while (!isspace(words[i]))
+                i++;
+            string tableName(words + 7, words + i);
+            if (this->tableName) {
+                delete[]this->tableName;
+            }
+            this->tableName = new char[tableName.length() + 1];
+            strcpy(this->tableName, tableName.c_str());
+            //retine nume tabela
+
+            if (s == "UPDATE") {
+                if (i != 7)
+                {
+                    int j;
+                    j = i + 1;
+                    while (!isspace(words[j]))
+                        j++;
+                    string set(words + i + 1, words + j);
+                    //retine SET
+                    if (set == "SET") {
+                        int k = j + 1;
+                        if (words[strlen(words) - 1] == ';')
+                        {
+                            while (words[k] != '=' && words[k] != ' ')
+                                k++;
+                            string columnName1(words + j + 1, words + k);//retine numele primei coloane
+                            if (this->columnName) {
+                                delete[]this->columnName;
+                            }
+                            this->columnName = new string[2];//va retine numele celor 2 valori
+                            this->columnName[0] = columnName1;
+
+                            if (words[k + 1] == '=') {
+                                int n = k + 3;
+                                while (!isspace(words[n]))
+                                    n++;
+                                string valoare1(words + k + 3, words + n);
+                                //retine valoarea 1
+                                if (this->valoareIntrodusa) {
+                                    delete[]this->valoareIntrodusa;
+                                }
+                                this->valoareIntrodusa = new string[2];
+                                this->valoareIntrodusa[0] = valoare1;
+                                string where(words + n + 1, words + n + 6);
+                                //retine cuvantul WHERE
+                                if (where == "WHERE")
+                                {
+                                    int pozitie = n + 7;
+                                    while (words[pozitie] != '=' && words[pozitie] != ' ')
+                                        pozitie = pozitie + 1;
+                                    string columnName2(words + n + 7, words + pozitie);
+                                    //retine a 2 a column
+                                    this->columnName[1] = columnName2;
+                                    if (words[pozitie + 1] == '==') {
+                                        pozitie = pozitie + 3;
+                                        int sf = pozitie;
+                                        while (words[sf] != NULL)
+                                            sf++;
+                                        string valoare2(words + pozitie, words + sf);
+                                        //retine a 2 a valoare
+                                        this->valoareIntrodusa[1] = valoare2;
+                                        isCorrect = true;
+
+
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        if (isCorrect == false) {
+            throw mesajExceptie("Comanda introdusa nu este valida");
+        }
+        else {
+            cout << "Comanda introdusa a fost executata" << endl;
+
+        }
+    }
+    friend ostream& operator<<(ostream&, Update);
+};
+ostream& operator<<(ostream& out, Update u) {
+    out << "Comanda introdusa este:" << u.getIsCorrect() << endl;
+    out << "Modificarile sunt facute pentru tabela " << u.gettableName() << endl;
+    out << "Valorile introduse sunt : ";
+    for (int j = 0; j < sizeof(u.valoareIntrodusa); j++) {
+        out << u.getValoareIntrodusa()[j] << " ";
+    }
+    return out;
+}
+class Insert
+{
+    bool isCorrect;
+    char* tableName;
+    string* valoareIntrodusa;
+    int nrValues;
+
+
+public:
+    Insert() {
+        this->isCorrect = false;
+        this->tableName = NULL;
+        this->valoareIntrodusa = NULL;
+        this->nrValues = 0;
+    }
+
+    Insert(bool isCorrect, const char* tableName, string* valoareIntrodusa, int nrValues)
+    {
+        this->isCorrect = isCorrect;
+        this->tableName = new char[strlen(tableName) + 1];
+        strcpy(this->tableName, tableName);
+        this->nrValues = nrValues;
+        this->valoareIntrodusa = new string[this->nrValues];
+        for (int i = 0; i < this->nrValues; i++) {
+            this->valoareIntrodusa[i] = valoareIntrodusa[i];
+        }
+    }
+    Insert(const Insert& ins) {
+        this->isCorrect = ins.isCorrect;
+        this->tableName = new char[strlen(ins.tableName) + 1];
+        strcpy(this->tableName, ins.tableName);
+        this->nrValues = ins.nrValues;
+        this->valoareIntrodusa = new string[this->nrValues];
+        for (int i = 0; i < this->nrValues; i++)
+        {
+            this->valoareIntrodusa[i] = ins.valoareIntrodusa[i];
+        }
+    }
+
+    ~Insert() {
+        if (this->tableName) {
+            delete[]tableName;
+        }
+        tableName = NULL;
+        if (this->valoareIntrodusa)
+        {
+            delete[]this->valoareIntrodusa;
+        }
+        this->valoareIntrodusa = NULL;
+    }
+    Insert& operator=(const Insert& ins) {
+        this->isCorrect = ins.isCorrect;
+        if (this->tableName) {
+            delete[]this->tableName;
+        }
+        this->tableName = new char[strlen(ins.tableName) + 1];
+        strcpy(this->tableName, ins.tableName);
+        this->nrValues = ins.nrValues;
+        if (this->valoareIntrodusa) {
+            delete[]this->valoareIntrodusa;
+        }
+        this->valoareIntrodusa = new string[this->nrValues];
+        for (int i = 0; i < this->nrValues; i++) {
+            this->valoareIntrodusa[i] = ins.valoareIntrodusa[i];
+        }
+        return *this;
+    }
+    //operatorul explicit
+    explicit operator float() {
+        return this->nrValues;
+    }
+
+    //operator de negare
+    bool operator!() {
+        this->isCorrect = !(this->isCorrect);
+        return this->isCorrect;
+    }
+
+    //getteri si setteri
+    int getnrValues() {
+        return this->nrValues;
+    }
+
+    bool getIsCorrect() {
+        return this->isCorrect;
+    }
+    char* gettableName() {
+        return this->tableName;
+    }
+
+    string* getValoareIntrodusa() {
+        return this->valoareIntrodusa;
+    }
+    string getValoareIntrodusa(int i) {
+        if (i >= 0 && i < this->nrValues) {
+            return this->valoareIntrodusa[i];
+        }
+    }
+    void setIsCorrect(bool isCorrect) {
+        this->isCorrect = isCorrect;
+    }
+    void settableName(char* tableName) {
+        if (tableName) {
+            if (this->tableName) {
+                delete[]this->tableName;
+            }
+            this->tableName = new char[strlen(tableName) + 1];
+            strcpy(this->tableName, tableName);
+        }
+
+    }
+
+    void setValoareIntrodusa(string* valoareIntrodusa, int nrValues)
+    {
+        if (valoareIntrodusa && nrValues > 0)
+        {
+            this->nrValues = nrValues;
+            if (this->valoareIntrodusa)
+            {
+                delete[]this->valoareIntrodusa;
+            }
+            this->valoareIntrodusa = new string[this->nrValues];
+            for (int i = 0; i < this->nrValues; i++)
+            {
+                this->valoareIntrodusa[i] = valoareIntrodusa[i];
+            }
+
+        }
+    }
+
+    void VerifyInsert(string c) {
+        char* words;
+        
+        words = new char[strlen(c.c_str()) + 1000];
+        strcpy(words, words + 11);
+        string s(words, words + 11);
+        if (isspace(words[11]))
+        {
+            int i = 12;
+            while (!isspace(words[i]))
+                i++;
+            string nume_tabela(words + 12, words + 1);
+            if (this->tableName)
+            {
+                delete[]this->tableName;
+            }
+            this->tableName = new char[nume_tabela.length() + 1];
+            strcpy(this->tableName, nume_tabela.c_str());
+            if (i != 12)
+            {
+                int m = i + 1;
+                while (words[m] != '(' && words[m])
+                {
+                    m++;
+                }
+                if (words[strlen(words) - 1] == ';') {
+                    string valori(words + i + 1, words + m);
+                    char delm[] = ",";
+                    if (valori == "VALUES" || valori == "VALUES")
+                    {
+                        char* stringParenthesis;
+                        stringParenthesis = new char[strlen(words) + 1];//va retine ce este intre paranteze la final
+                        strcpy(stringParenthesis, words + m);
+
+                        if (stringParenthesis[0] == '(' && stringParenthesis[strlen(stringParenthesis) - 2] == ')')
+                        {
+                            strcpy(stringParenthesis, stringParenthesis + 1);
+                            strrev(stringParenthesis);
+                            strcpy(stringParenthesis, stringParenthesis + 2);
+                            strrev(stringParenthesis);
+                            int nrCommas = 0;
+                            for (int i = 0; i < strlen(stringParenthesis); i++)
+                            {
+                                if (stringParenthesis[i] == ',')nrCommas++;
+                            }
+                            //se sterg spatiile dintre cuvintele din paranteze pt a verifica corectitudinea pozitieitiilor virgulelor
+
+                            int k = 0;
+                            while (k < strlen(stringParenthesis)) {
+                                if (stringParenthesis[k] == ' ') {
+                                    int p = k;
+                                    while (p < strlen(stringParenthesis) - 1)
+                                    {
+                                        stringParenthesis[p] = stringParenthesis[p + 1];
+                                        p++;
+                                    }
+                                    k--;
+                                }
+                                else k++;
+                            }
+                            //extragerea cuvintelor
+                            if (stringParenthesis[0] != ',') {
+                                cout << stringParenthesis << endl;
+
+                                this->valoareIntrodusa = new string[100];
+                                char* key = strtok(stringParenthesis, ",");
+                                this->nrValues = 0;
+                                while (key != NULL)
+                                {
+                                    this->valoareIntrodusa[this->nrValues] = key;
+                                    key = strtok(NULL, ",");
+                                    this->nrValues++;
+                                }
+                                //verificarea corectitudinii dintre nr valorilor si nr virgulelor
+                                if (this->nrValues == nrCommas + 1)
+                                {
+
+                                    isCorrect = true;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            if (isCorrect == false)
+                throw mesajExceptie("Comanda introdusa nu este corecta");
+
+            else
+                cout << "Comanda introdusa a fost executata" << endl;
+
+        }
+    }
+    friend ostream& operator<<(ostream&, Insert);
+};
+ostream& operator<< (ostream& out, Insert i) {
+    out << "Comanda introdusa este:" << i.getIsCorrect() << endl;
+    out << "Modificarile sunt facute pentru tabela " << i.gettableName() << endl;
+    out << "Valorile introduse sunt : ";
+    for (int j = 0; j < i.nrValues; j++) {
+        out << i.getValoareIntrodusa()[j] << " ";
+    }
+    out << endl;
+    return out;
+}
+
+
+class DateFisier {
+public: string numeFisier;
+
+      DateFisier() {
+          numeFisier = "";
+      }
+      DateFisier(string comanda) {
+          this->numeFisier = numeFisier;
+      }
+      void setNumeFisier(string nume) {
+          if (nume.length() > 0) {
+              this->numeFisier = nume;
+          }
+      }
+      string getNumeFisier()
+      {
+          return this->numeFisier;
+      }
+};
+class VerificareComanda {
+    char* comanda;
+public:
+    VerificareComanda() {
+        comanda = new char[strlen("Default") + 1];
+        strcpy(comanda, "Default");
+    }
+    VerificareComanda(const char* comanda) {
+        this->comanda = new char[strlen(comanda) + 1];
+        strcpy(this->comanda, comanda);
+    }
+    ~VerificareComanda() {
+        if (this->comanda != NULL) {
+            delete[] this->comanda;
+        }
+    }
+    VerificareComanda& operator=(const VerificareComanda& v) {
+        if (this->comanda != NULL) {
+            delete[] this->comanda;
+        }
+        this->comanda = v.comanda;
+        this->comanda = new char[strlen(v.comanda) + 1];
+        strcpy(this->comanda, v.comanda);
+        return *this;
+    }
+    VerificareComanda(const VerificareComanda& v)
+    {
+        if (this->comanda != NULL) {
+            delete[] this->comanda;
+        }
+        this->comanda = v.comanda;
+        this->comanda = new char[strlen(v.comanda) + 1];
+        strcpy(this->comanda, v.comanda);
+    }
+    string getComanda() {
+        return this->comanda;
+    }
+    void setComanda(const char* comanda) {
+        if (this->comanda != NULL) {
+            delete[] this->comanda;
+        }
+        this->comanda = new char[strlen(comanda) + 1];
+        strcpy(this->comanda, comanda);
+    }
+    void verificaComanda() {
+        char* copie;
+        copie = new char[strlen(comanda)];
+        strcpy(copie, this->comanda);
+        char* token = strtok(copie, " ");
+        if (token != NULL) {
+            if (strcmp(token, "INSERT") == 0) {
+                Insert insert;
+                insert.VerifyInsert(this->comanda);
+            }
+            else if (strcmp(token, "DELETE") == 0) {
+                Delete del;
+                del.verifyDelete(this->comanda);
+
+            }
+            else if (strcmp(token, "SELECT") == 0) {
+                Select select;
+                select.verifySelect(this->comanda);
+            }
+            else if (strcmp(token, "UPDATE") == 0) {
+                Update update;
+                update.verifyUpdate(this->comanda);
+            }
+            else if (strcmp(token, "DISPLAY") == 0) {
+                Display display;
+                display.DisplayTable(this->comanda);
+            }
+            else if (strcmp(token, "DROP") == 0) {
+                Drop drop;
+                drop.verifyDrop(this->comanda);
+            }
+            else if (strcmp(token, "CREATE") == 0) {
+                Creare create;
+                create.verifyCreateTable(this->comanda);
+            }
+            else if (strcmp(token, "UPDATE TABLE") == 0)
+            {
+
+            }
+            else {
+                throw mesajExceptie("Comanda intrdusa nu poate fi selectata");
+            }
+        }
+
+    }
+    friend istream& operator>> (istream&, VerificareComanda&);
+    friend ostream& operator<<(ostream&, VerificareComanda);
+};
+istream& operator>> (istream& in, VerificareComanda& v) {
+    cout << "Introduceti comanda dorita:";
+    in >> v.comanda;
+    return in;
+}
+ostream& operator<< (ostream& out, VerificareComanda v) {
+
+    out << "A fost introdusa comanda:" << v.getComanda();
+    return out;
+}
+
+class Database {
+    int nrTables;
+    const string host;
+    Table* table;
+    string name;
+
+
+public:
+    Database() : host("Project") {
+        this->nrTables = 0;
+        this->table = NULL;
+        this->name = "";
+    }
+
+    Database(int nrTables, string host, Table* table, string name) :host(host)
+    {
+        this->nrTables = nrTables;
+        this->table = new Table[this->nrTables];
+        for (int i = 0; i < this->nrTables; i++) {
+            this->table[i] = table[i];
+        }
+    }
+
+    Database(const Database& d) : host(d.host) {
+        this->table = new Table[d.nrTables];
+        for (int i = 0; i < d.nrTables; i++)
+        {
+            this->table[i] = d.table[i];
+        }
+        this->name = d.name;
+    }
+    ~Database() {
+        if (this->table) {
+            delete[]this->table;
+        }
+    }
+    Database& operator=(const Database& d) {
+        if (this->name != d.name) {
+            this->name = d.name;
+            if (this->table) {
+                delete[]this->table;
+            }
+            this->table = new Table[d.nrTables];
+            for (int i = 0; i < d.nrTables; i++) {
+                this->table[i] = d.table[i];
+            }
+            return*this;
+        }
+    }
+    class PrelucrareDateFisier :public DateFisier, public Insert, public Creare, public VerificareComanda {
+    public:
+        DateFisier d;
+        Insert i;
+        Creare c;
+        VerificareComanda cd;
+        PrelucrareDateFisier() {
+            i.getValoareIntrodusa();
+            c.getIsCorrect();
+            cd.getComanda();
+        }
+
+        string getCom = cd.getComanda();
+        void preluare() {
+            d.setNumeFisier("CREATE");
+            ifstream file_CREATE(d.getNumeFisier() + ".txt");
+            if (file_CREATE.is_open())
+            {
+                while (getline(file_CREATE, getCom))
+                {
+                    verifyCreateTable(cd.getComanda());
+                }
+                file_CREATE.close();
+            }
+            else
+            {
+                cout << "Fisierul nu exista!" << endl;
+            }
+
+            d.setNumeFisier("INSERT");
+            ifstream file_INSERT(d.getNumeFisier() + ".txt");
+            if (file_INSERT.is_open())
+            {
+                while (getline(file_INSERT, getCom))
+                {
+                    VerifyInsert(cd.getComanda());
+                }
+                file_INSERT.close();
+            }
+            else
+            {
+                cout << "Fisierul nu exista!" << endl;
+            }
+        }
+        void exportTabelCSV()
+        {
+            string comanda1 = cd.getComanda();
+            string verifyCommand = comanda1.substr(0, 6);
+            if (verifyCommand == "EXPORT")
+            {
+                int position1 = comanda1.find(' ', 0);
+                int position2 = comanda1.find(' ', position1 + 1);
+
+                string tabelName = comanda1.substr(position1 + 1, position2 - position1 - 1);
+                int flag = 0;
+                for (std::map<string, set<vector<string>>>::iterator iterator = tables.begin(); iterator != tables.end(); ++iterator)
+                {
+                    if (tabelName == iterator->first)
+                    {
+                        flag = 1;
+                        position1 = position2;
+                        position2 = comanda1.length();
+                        string name_fisier = comanda1.substr(position1 + 1, position2 - position1);
+                        if (name_fisier.length() > 0)
+                        {
+                            ofstream file_CSV;
+                            file_CSV.open(name_fisier);
+                            for (std::set<vector<string>>::reverse_iterator r_it = iterator->second.rbegin(); r_it != iterator->second.rend(); ++r_it)
+                            {
+                                vector<string> aux = *r_it;
+                                for (std::vector<string>::iterator vt = aux.begin(); vt != aux.end(); ++vt)
+                                {
+                                    file_CSV << *vt << ",";
+                                }
+                                file_CSV << endl;
+                            }
+                            file_CSV.close();
+                            cout << "Fisierul CSV a fost creat!" << endl;
+                        }
+                        else
+                        {
+                            cout << "Fisierul CSV nu poate fi creat!" << endl;
+                        }
+                        break;
+                    }
+                }
+                if (flag == 0)
+                {
+                    cout << "Tabelul nu este existent" << endl;
+                }
+            }
+            else
+            {
+                cout << "Comanda este incorecta!" << endl;
+            }
+        }
+
+    };
+
+
+
+    //get si set
+    string getHost() {
+        return this->host;
+    }
+    string getName() {
+        return this->name;
+    }
+    void setName(string name) {
+        if (name.length() > 0) {
+            this->name = name;
+        }
+    }
+    Table* getTable() {
+        return this->table;
+    }
+    Table getTable(int index) {
+        if (index >= 0 && index < nrTables) {
+            return this->table[index];
+        }
+    }
+    void setTable(Table* table, int nrTables) {
+        if (table && nrTables > 0) {
+            this->nrTables = nrTables;
+            if (this->table) {
+                delete[]this->table;
+            }
+            this->table = new Table[this->nrTables];
+            for (int i = 0; i < this->nrTables; i++) {
+                this->table[i] = table[i];
+            }
+        }
+    }
+    int getNrTables() {
+        return this->nrTables;
+    }
+
+};
+
+int DisplayMenu()
+{
+    int choose;
+    cout << "\tMeniu" << endl;
+    cout << "1.CREARE TABEL NOU" << endl;
+    cout << "2.INSERARE IN TABEL" << endl;
+    cout << "3.AFISARE TABEL" << endl;
+    cout << "4.STERGERE TABEL" << endl;
+    cout << "5.SELECTARE DIN TABEL" << endl;
+    cout << "6.STERGERE COLOANA" << endl;
+    cout << "7.UPDATE VALOARE TABEL" << endl;
+    cout << "8.EXIT" << endl << endl << endl;
+    cout << "Doresti exportarea tabelului in CSV? \n Apasa 9" << endl;
+
+    cin >> choose;
+    return choose;
+}
+
+
+
+
+void main()
+{
+
+    string in;
+    int choose = 0;
+    while (choose != 8)
+    {
+        choose = DisplayMenu();
+        switch (choose)
+        {
+        case 1:
+        {
+            system("cls");
+            string comanda;
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip CREATE TABEL: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+        case 2:
+        {
+            system("cls");
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip INSERT TABEL: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+        case 3:
+        {
+            system("cls");
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip DISPLAY TABEL: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+
+        case 4:
+        {
+            system("cls");
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip DROP TABEL: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+
+        case 5:
+        {
+            system("cls");
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip SELECT FROM: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+
+        case 6:
+        {
+            system("cls");
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip DELETE: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+
+        case 7:
+        {
+            system("cls");
+
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+
+
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip UPDATE TABEL: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+
+        case 8: { break; };
+
+
+        case 9: {
+            system("cls");
+            if (cin.peek() == '\n')
+            {
+                cin.ignore();
+            }
+            try {
+                VerificareComanda verificare;
+                cout << "Introduceti o comanda de tip UPDATE TABEL: " << endl;
+                getline(cin, in);
+                verificare.setComanda(in.c_str());
+                verificare.verificaComanda();
+            }
+            catch (mesajExceptie exceptie) {
+                cout << exceptie.getMesajDeExceptie();
+            }
+            cout << endl;
+            cout << "Serverul bazei de date este: ";
+            Database db;
+            cout << db.getHost();
+            break;
+        }
+
+
+        default:
+        {
+            system("cls");
+            cout << "Nr. invalid!" << endl;
+            break;
+        }
+
+        }
+    }
+}
