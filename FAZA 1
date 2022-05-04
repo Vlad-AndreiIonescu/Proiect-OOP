@@ -21,6 +21,7 @@ public:
 };
 class Creare {
     bool isCorrect;
+    string cccc;
     string tableName;
     string* columnName;
     string* tip;
