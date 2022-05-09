@@ -82,19 +82,37 @@ public class Main {
                 }
             }
 
-            //Cerinta1: Comparabilitate intre elemente dupa valoare - nu merge
-            List<Element> lista1 = new ArrayList<>();
-            List<Element>lista2 = new ArrayList<>();
 
-            lista1 = app.elemente.subList(0, app.elemente.size()/2);
-            lista2 = app.elemente.subList(app.elemente.size()/2+1, app.elemente.size());
-            for(Element element: lista1){
-                for(Element element1:lista2){
-                    if(element.compareTo(element1)==0){
-                        System.out.println("Elementul egal este: "+element);
+//            List<Element> lista1 = new ArrayList<>();
+//            List<Element>lista2 = new ArrayList<>();
+//
+//            lista1 = app.elemente.subList(0, app.elemente.size()/2);
+//            lista2 = app.elemente.subList(app.elemente.size()/2+1, app.elemente.size());
+//            for(Element element: lista1){
+//                for(Element element1:lista2){
+//                    if(element.compareTo(element1)==0){
+//                        System.out.println("Elementul egal este: "+element);
+//                    }
+//                }
+//            }
+
+            //Cerinta1: Comparabilitate intre elemente dupa valoare
+
+            List<Element> listaElemente = app.getElemente();
+            System.out.println(listaElemente.size());
+            int bec = 0;
+            for (int i = 0; i < listaElemente.size()-1; i++) {
+                for (int j = i + 1; j < listaElemente.size(); j++) {
+                    if (listaElemente.get(i).compareTo(listaElemente.get(j)) == 0) {
+                        System.out.println(listaElemente.get(i) + " este duplicat");
+                        bec = 1;
                     }
                 }
             }
+            if(bec == 0){
+                System.out.println("nu exista duplicat");
+            }
+
 
             //Cerinta 2: Se citesc elementele intr-o lista si se afiseaza la consolo elementele negative
 
